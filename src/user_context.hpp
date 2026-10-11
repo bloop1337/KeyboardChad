@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 namespace kbchad {	
 	struct Typing_Session_Context {
@@ -8,9 +9,16 @@ namespace kbchad {
 		int text_size;
 		int words_count;
 	};
+	
+	struct Wpm_Test {
+		float wpm;
+		float acc;
+		int errors;
+		int words_count;
+		long typing_time;
+	};
 
-	// TODO
 	struct User_Context {
-		int tests_completed;
+		std::vector<Wpm_Test> tests;
 	};
 };

@@ -7,14 +7,15 @@ using namespace tui;
 using namespace utils;
 
 void initSettings() {
-	const std::string p = getHome()->string() + "/.local/share/kbchad/wordlist";
-	std::filesystem::path settingPath(p);
+	using namespace std;
+	const string p = getHome()->string() + "/.local/share/kbchad/wordlist";
+	filesystem::path settingPath(p);
 
     mkdir(settingPath);
     if (!fileExists("static/english.txt"))
         return;
-	copy(std::filesystem::path("static/english.txt"), 
-		std::filesystem::path(p + "/"));
+	copy(filesystem::path("static/english.txt"), filesystem::path(p + "/"));
+
 }
 
 int main() {

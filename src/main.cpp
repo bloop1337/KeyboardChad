@@ -1,28 +1,16 @@
 #include "WordList.hpp"
 #include "Util.hpp"
 #include "FileUtil.hpp"
+#include "user_storage.hpp"
 #include "window_factory.hpp"
 
 using namespace tui;
 using namespace utils;
 
-void initSettings() {
-	using namespace std;
-	const string p = getHome()->string() + "/.local/share/kbchad/wordlist";
-	filesystem::path settingPath(p);
-
-    mkdir(settingPath);
-    if (!fileExists("static/english.txt"))
-        return;
-	copy(filesystem::path("static/english.txt"), filesystem::path(p + "/"));
-
-}
-
 int main() {
-   	if (!fileExists(getHome()->string() + "/.local/share/kbchad/wordlist"))
-        initSettings();
+    kbchad::init_defaults();
 
-	WordList list = WordList{utils::getHome()->string() + "/.local/share/kbchad/wordlist/english.txt"};
+	WordList list = WordList{kbchad::get_home() + "/.local/share/kbchad/english.txt"};
 
 	kbchad::Typing_Window tw = kbchad::type_window(list);
 

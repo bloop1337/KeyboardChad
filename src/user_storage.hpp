@@ -8,6 +8,6 @@ namespace kbchad {
 	std::string get_home();
 
 	User_Context load();
-	bool write(User_Context);	
+	bool write_test(const Wpm_Test test);	
 };
 

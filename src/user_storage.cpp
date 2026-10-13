@@ -5,17 +5,19 @@
 #include <unistd.h>
 
 namespace kbchad {
-	constexpr std::string MINI_DICT[10] = {
+	static const std::string user_data_fn = "userdata.csv";
+	static const std::string kbchad_home  = "/.local/share/kbchad/";
+	static const std::string MINI_DICT[10] = {
 		"there",
-		"when",
+		"guide",
 		"leave",
 		"another",
-		"wood",
-		"man",
-		"school",
-		"include",
+		"monkey",
 		"delete",
-		"fox",
+		"free",
+		"quick",
+		"chad",
+		"pure",
 	};
 
 	using namespace std::filesystem;
@@ -28,21 +30,34 @@ namespace kbchad {
 		return std::string(home);
 	}
 
-	void init_defaults() {
-		std::string kbchad_data = get_home() + "./local/share/kbchad/";
-        std::ifstream f(kbchad_data);
-		if (!f.good()) create_directories(path(kbchad_data));
 
-		std::ofstream user_data(kbchad_data + "userdata.csv");
-		user_data << "wpm,acc,errors,words_count,typing_time\n";
+	static void init_def_dir() {
+		std::string kbchad_data = get_home() + kbchad_home;
+		std::ifstream f(kbchad_data);
+		if (!f.good()) create_directories(path(kbchad_data));
+	}
+
+
+
+	static void user_data_write(const std::string text) {
+		std::string kbchad_data = get_home() + kbchad_home;
+		std::ofstream user_data;
+		user_data.open(kbchad_data + user_data_fn, std::ios::app);
+		user_data << text;
+	}
+
+	void init_defaults() {
+		const std::string kbchad_data = get_home() + kbchad_home;
+		
+		init_def_dir();
+		
+		std::ifstream user_data(kbchad_data + user_data_fn);
+		if (!user_data.good())
+			user_data_write("wpm,acc,errors,words_count,typing_time\n");
 
 		std::ifstream english(path(kbchad_data + "english.txt"));
 		if (english.good()) return;	
-
-		if (!copy_file(path("static/englsih.txt"), path(kbchad_data))) {
-			std::ofstream outfile(kbchad_data + "english.txt");
-			for (int i = 0; i < 10; ++i) outfile << MINI_DICT[i] << "\n";
-		}
+		copy_file(path("static/english.txt"), path(kbchad_data + "english.txt"));
 	}
 
 	User_Context load() {
@@ -50,9 +65,16 @@ namespace kbchad {
 		return {};
 	}
 
+	bool write_test(const Wpm_Test test) {
+		user_data_write(
+			std::to_string(test.wpm) + "," +
+			std::to_string(test.acc) + "," +
+			std::to_string(test.errors) + "," +
+			std::to_string(test.words_count) + "," +
+			std::to_string(test.typing_time) + "\n"
+		);
 
-	bool write(User_Context context) {
-		return false;
+		return true;
 	}
 };
 

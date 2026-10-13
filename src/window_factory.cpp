@@ -1,6 +1,7 @@
 
 #include "TextWidget.hpp"
 #include "window_factory.hpp"
+#include "user_storage.hpp"
 #include "Elements.hpp"
 #include "WordList.hpp"
 #include "word_counter.hpp"
@@ -75,6 +76,14 @@ namespace kbchad {
 		
 		const float acc = tw.context().errors > 0 ? 100.0 - (100.0 * tw.context().errors / tw.context().text_size) : 100;
 		const float wpm = (tw.context().words_count * 60000.0 / (tw.context().end_time - tw.context().start_time)) - tw.context().errors;
+
+		kbchad::write_test((Wpm_Test){
+			.wpm = wpm,
+			.acc = acc,
+			.errors = tw.context().errors,
+			.words_count = tw.context().words_count,
+			.typing_time = tw.context().end_time - tw.context().start_time
+		});
 
 		// TODO add record notification
 		auto stat_text = std::make_shared<tui::TextWidget>(

@@ -1,7 +1,10 @@
 #include "user_storage.hpp"
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <vector>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 
 namespace kbchad {
@@ -57,12 +60,53 @@ namespace kbchad {
 
 		std::ifstream english(path(kbchad_data + "english.txt"));
 		if (english.good()) return;	
-		copy_file(path("static/english.txt"), path(kbchad_data + "english.txt"));
+
+		try {
+			copy_file(path("static/english.txt"), path(kbchad_data + "english.txt"));
+		} catch (const std::runtime_error& err) {
+			std::ofstream out(path(kbchad_data + "english.txt"));
+			for (int i = 0; i < 10; ++i) out << MINI_DICT[i] << "\n";
+		} 
 	}
 
-	User_Context load() {
+	static std::vector<std::string> split_to_vec(std::string s, char delim) {
+    	std::vector<std::string> result;
+    	std::stringstream ss(s);
+    	std::string item;
+    	while (std::getline(ss, item, delim)) {
+    	    result.push_back(item);
+    	}
+    	return result;
+	}
+
+	User_Context load_ud() {
 		
-		return {};
+		User_Context context = { .tests = std::vector<Wpm_Test>() };
+		std::ifstream user_data { get_home() + kbchad_home + user_data_fn };
+
+		if (!user_data.good()) return context;
+		std::string line;
+		getline(user_data, line);
+
+		while (getline(user_data, line)) {
+			std::vector<std::string> cont = split_to_vec(line, ',');
+//			try {
+				Wpm_Test test = {
+					.wpm = std::stof(cont[0]),
+					.acc = std::stof(cont[1]),
+					.errors = std::stoi(cont[2]),
+					.words_count = std::stoi(cont[3]),
+					.typing_time = std::stol(cont[4]),
+				};
+				context.tests.push_back(test);
+//			} catch (std::invalid_argument& err) {
+//				continue;
+//			}	
+		}
+
+		user_data.close();
+		
+		return context;
 	}
 
 	bool write_test(const Wpm_Test test) {

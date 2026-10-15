@@ -1,124 +1,78 @@
-#include "Elements.hpp"
-#include "Input.hpp"
-#include "WinSize.hpp"
-#include "Window.hpp"
-#include "Util.hpp"
-#include "WordList.hpp"
-#include "FileUtil.hpp"
-#include "TextWidget.hpp"
-#include "Config.hpp"
-#include <string>
+// KeyboardChad is a simple terminal-based typing practice tool 
+// Copyright (C) 2026 bloop
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0
 
+#include <WordList.hpp>
+#include <Util.hpp>
+#include <Window.hpp>
 
-void initSettings();
-void setCurrentTimeMs(long& time);
+#include "user_storage.hpp"
+#include "screen.hpp"
 
-using namespace tui;
-using namespace utils;
+void on_ctrlc(int a) {
+	tui::end_render();
+	exit(0);
+}
 
 int main() {
-   	if (!fileExists(getHome()->string() +
-	"/.local/share/kbchad/wordlist"))
-        initSettings();
+    kbchad::init_defaults();
 
-	WordList dict = WordList(utils::getHome()->string() +
-	"/.local/share/kbchad/wordlist/english.txt");
+	WordList list = WordList{kbchad::get_home() + "/.local/share/kbchad/english.txt"};
 
-	auto input = std::make_shared<Input>
-	(dict.generateSentence(config::WORD_COUNT));
-	auto statText = std::make_shared<TextWidget>("");	
-	long startTypeTime = 0;
-	long endTypeTime = 0;
-
-	Window main = Window(std::make_shared<size::FullScreen>());	
-	Window stats= Window(std::make_shared<size::FullScreen>());	
-
-	main.setContent({
-		text("KeyboardChad") | centerX,
-		input | centerX | centerY, 
-		text("[esc] exit [entr] restart") | buttom | centerX
-	});
+	tui::Window w = tui::Window{std::make_shared<tui::size::FullScreen>()};
+	std::unique_ptr<kbchad::Screen> s  = std::make_unique<kbchad::TypingScreen>();	
 	
-	stats.setContent({
-		text("KeyboardChad") | centerX,
-		statText | centerX | centerY, 
-		text("[esc] exit [entr] restart") | buttom | centerX
-	});
-	const std::function<void(Key)> updateInput = [&](Key k) {
-		input->updateInput(dict.generateSentence(
-			config::WORD_COUNT)
-		);
-		startTypeTime = 0;
-		endTypeTime = 0;
-	};
-	main.mapping(Key::ENTER, updateInput);
-	stats.mapping(Key::ENTER, updateInput);	
+	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
 
-	util::enableAlterScr();
-	util::hideCursor();
+	tui::begin_render();
+	tui::set_ctrlc_handler(&on_ctrlc);
+	tui::hideCursor();
 
-	for (;;) {
-		if (!input->isEnd()) {
-			main.renderDiff();
-			char ch = util::getch();
-			
-			if (ch == Key::ESC) break;
-			main.pressOrDefault((Key)ch, [&](Key k){
-				input->press(ch);
-				if (startTypeTime == 0)
-					setCurrentTimeMs(startTypeTime);
-			});
-		} else {
-			if (endTypeTime == 0) {
-				setCurrentTimeMs(endTypeTime);
-				stats.render();
-			}
-			
-			float acc;
-			if (input->getMisses() > 0) {
-				acc = 100.0 - (100.0 * input->getMisses() /
-					input->getText().size());
-			} else { acc = 100.0; }
-
+	bool running = true;
+	while (running) {
 		
-			float wpm = (config::WORD_COUNT * 60000.0 / 
-			(endTypeTime - startTypeTime)) - input->getMisses();
-			if (acc > 75) {
-				statText->updateText(
-					"WPM: " + std::to_string(wpm) + " " +
-					"ACC: " + std::to_string(acc) + "%"
-				);
-			} else {
-				statText->updateText("Invalide accuracy!");
+		s->render(w);
+	
+		switch(s->on_key((tui::Key)tui::getch())) {
+			case kbchad::CurrentState::Exit: {
+				running = false;
+				break;
 			}
-
-			stats.renderDiff();
-			char ch = util::getch();
-			if (ch == Key::ESC) break;
-			stats.press((Key)ch);
+			case kbchad::CurrentState::RestartTest: {
+				s = std::make_unique<kbchad::TypingScreen>();
+				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
+				break;
+			}
+			case kbchad::CurrentState::ShowStatistic: {	
+				kbchad::Typing_Session_Context ctx = static_cast<kbchad::TypingScreen*>(s.get())->context();
+				write_test(TSC_to_Wpm_Test(ctx));
+				s = std::make_unique<kbchad::TestStatisticScreen>(ctx);
+				break;
+			}
+			case kbchad::CurrentState::ShowProfile: {
+				kbchad::User_Context ctx = kbchad::load_ud();
+				s = std::make_unique<kbchad::ProfileScreen>(ctx);
+				break;
+			}
+			case kbchad::CurrentState::None:
+				break;
 		}
 	}
 
-	util::disablAlterScr();
-	util::showCursor();
+	tui::end_render();
     return 0;
 }
-
-void initSettings() {
-	const std::string p = utils::getHome()->string() +
-		"/.local/share/kbchad/wordlist";
-	std::filesystem::path settingPath(p);
-
-    utils::mkdir(settingPath);
-    if (!utils::fileExists("static/english.txt"))
-        return;
-	copy(std::filesystem::path("static/english.txt"), 
-		std::filesystem::path(p + "/"));
-}
-
-void setCurrentTimeMs(long& time) {
-    time = std::chrono::duration_cast<std::chrono::milliseconds>(
-       std::chrono::system_clock::now().time_since_epoch() 
-    ).count();
-}
-

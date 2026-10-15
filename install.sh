@@ -22,8 +22,9 @@ fi
 if [ "$wordlist" == "n" ] || [ "$wordlist" == "N" ]; then
     echo "Warning: you declined to install the wordlist"
 else
-    mkdir -p $HOME/.local/share/kbchad/wordlist
-	sudo cp static/english.txt $HOME/.local/share/kbchad/wordlist && 
+    mkdir -p $HOME/.local/share/kbchad/
+	sudo cp static/english.txt $HOME/.local/share/kbchad/ && 
         echo "wordlist was installed."
 fi	
 
+kbchad

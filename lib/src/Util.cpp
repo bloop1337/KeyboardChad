@@ -2,8 +2,9 @@
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
+#include <signal.h>
 
-namespace tui::util {
+namespace tui {
 
 	char getch() {
         char buf = 0;
@@ -54,5 +55,25 @@ namespace tui::util {
     void moveCursor(int x, int y) {
         std::cout << "\x1B[" << y << ";" << x+1 << "H";
     }
+	
+	void end_render() {
+		disablAlterScr();
+		showCursor();
+	}
 
+	
+	void begin_render() {
+		enableAlterScr();
+		clearScr();
+	}
+
+
+	void set_ctrlc_handler(void(*handler)(int s)) {
+		struct sigaction sa;
+		sa.sa_handler = handler;
+	    sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
+
+		sigaction(SIGINT, &sa, NULL);
+	}
 }

@@ -18,6 +18,8 @@ namespace kbchad {
 		long typing_time;
 	};
 
+	Wpm_Test TSC_to_Wpm_Test(Typing_Session_Context);	
+
 	struct User_Context {
 		std::vector<Wpm_Test> tests;
 	};

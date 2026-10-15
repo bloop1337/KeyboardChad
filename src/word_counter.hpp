@@ -3,5 +3,5 @@
 #include <string>
 
 namespace kbchad {
-unsigned int word_count(std::string const& str);
+	unsigned int word_count(std::string const& str);
 }

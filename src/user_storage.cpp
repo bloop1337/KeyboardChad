@@ -90,18 +90,17 @@ namespace kbchad {
 
 		while (getline(user_data, line)) {
 			std::vector<std::string> cont = split_to_vec(line, ',');
-//			try {
-				Wpm_Test test = {
-					.wpm = std::stof(cont[0]),
-					.acc = std::stof(cont[1]),
-					.errors = std::stoi(cont[2]),
-					.words_count = std::stoi(cont[3]),
-					.typing_time = std::stol(cont[4]),
-				};
-				context.tests.push_back(test);
-//			} catch (std::invalid_argument& err) {
-//				continue;
-//			}	
+			try {
+				context.tests.emplace_back(
+					std::stof(cont[0]),
+					std::stof(cont[1]),
+					std::stoi(cont[2]),
+					std::stoi(cont[3]),
+					std::stol(cont[4])
+				);
+			} catch (std::invalid_argument& err) {
+				continue;
+			}	
 		}
 
 		user_data.close();
@@ -109,7 +108,7 @@ namespace kbchad {
 		return context;
 	}
 
-	bool write_test(const Wpm_Test test) {
+	void write_test(const Wpm_Test test) {
 		user_data_write(
 			std::to_string(test.wpm) + "," +
 			std::to_string(test.acc) + "," +
@@ -117,8 +116,6 @@ namespace kbchad {
 			std::to_string(test.words_count) + "," +
 			std::to_string(test.typing_time) + "\n"
 		);
-
-		return true;
 	}
 };
 

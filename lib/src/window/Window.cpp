@@ -107,12 +107,12 @@ namespace tui {
                     if (pixelAt(x, y) == oldPixelAt(x, y))
                         continue;
                     
-                    util::moveCursor(x, y);
+                    moveCursor(x, y);
                     renderPixelWithStyle(pixelAt(x, y));
                 }
             }
             std::cout << std::endl;
-            util::moveCursor(0,0);
+            moveCursor(0,0);
 
             cacheSize();
         } else {

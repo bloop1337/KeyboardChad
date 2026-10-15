@@ -1,65 +1,60 @@
-#include "WordList.hpp"
-#include "Util.hpp"
-#include "FileUtil.hpp"
-#include "user_storage.hpp"
-#include "Elements.hpp"
-#include "Window.hpp"
-#include <iostream>
-#include "WinSize.hpp"
-#include "window_factory.hpp"
+#include <WordList.hpp>
+#include <Util.hpp>
+#include <Window.hpp>
 
-using namespace tui;
-using namespace utils;
+#include "user_storage.hpp"
+#include "screen.hpp"
+
+void on_ctrlc(int a) {
+	tui::end_render();
+	exit(0);
+}
 
 int main() {
     kbchad::init_defaults();
 
 	WordList list = WordList{kbchad::get_home() + "/.local/share/kbchad/english.txt"};
 
-//	kbchad::Typing_Window tw = kbchad::type_window(list);
-
-	util::enableAlterScr();
-	util::hideCursor();
+	tui::Window w = tui::Window{std::make_shared<tui::size::FullScreen>()};
+	std::unique_ptr<kbchad::Screen> s  = std::make_unique<kbchad::TypingScreen>();	
 	
-	tui::Window w = Window{std::make_shared<tui::size::FullScreen>()};
-	kbchad::User_Context uc = kbchad::load_ud();
-	
-	std::string wpm_line = "AVG WPM: ";
-	float avg_wpm = 0;
-	int counter = 0;
-	for (const kbchad::Wpm_Test& test: uc.tests) {
-		avg_wpm+=test.wpm;
-		++counter;
-	}
-	avg_wpm/=counter;
-	wpm_line += std::to_string(avg_wpm);
+	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
 
-	w.setContent({
-		text("KeyboardChad") | centerX | centerY,
-		text(wpm_line) | centerX,
-	});
-	
+	tui::begin_render();
+	tui::set_ctrlc_handler(&on_ctrlc);
+	tui::hideCursor();
 
-	while (true) {
-		w.renderDiff();
-		char ch = util::getch();
-		if (ch == Key::ESC) break;
-//		if (!tw.input()->isEnd()) {
-//			tw.renderDiff();
-//			char ch = util::getch();
-//			if (ch == Key::ESC) break;
-//			tw.press_key((Key)ch);
-//		} else {
-//			Window statistic = kbchad::statistic_window(tw);
-//			util::clearScr();
-//			statistic.renderDiff();	
-//			char ch = util::getch();
-//			if (ch == Key::ESC) break;
-//			statistic.press((Key)ch);
-//		}
+	bool running = true;
+	while (running) {
+		
+		s->render(w);
+	
+		switch(s->on_key((tui::Key)tui::getch())) {
+			case kbchad::CurrentState::Exit: {
+				running = false;
+				break;
+			}
+			case kbchad::CurrentState::RestartTest: {
+				s = std::make_unique<kbchad::TypingScreen>();
+				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
+				break;
+			}
+			case kbchad::CurrentState::ShowStatistic: {	
+				kbchad::Typing_Session_Context ctx = static_cast<kbchad::TypingScreen*>(s.get())->context();
+				write_test(TSC_to_Wpm_Test(ctx));
+				s = std::make_unique<kbchad::TestStatisticScreen>(ctx);
+				break;
+			}
+			case kbchad::CurrentState::ShowProfile: {
+				kbchad::User_Context ctx = kbchad::load_ud();
+				s = std::make_unique<kbchad::ProfileScreen>(ctx);
+				break;
+			}
+			case kbchad::CurrentState::None:
+				break;
+		}
 	}
 
-	util::disablAlterScr();
-	util::showCursor();
+	tui::end_render();
     return 0;
 }

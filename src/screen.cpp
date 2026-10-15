@@ -75,6 +75,29 @@ namespace kbchad {
 	
 	ProfileScreen::ProfileScreen(User_Context context): context_(context) {}
 	
+
+	int ProfileScreen::words_typed() {
+		float wt = 0;	
+		if (context_.tests.size() == 0) return wt;
+	
+		for (Wpm_Test test: context_.tests) {
+			wt+=test.words_count;
+		}
+		return wt;
+
+	}
+	float ProfileScreen::max_wpm() {
+		float wpm = 0;	
+		if (context_.tests.size() == 0) return wpm;
+	
+		for (Wpm_Test test: context_.tests) {
+			if (test.wpm > wpm)
+				wpm=test.wpm;
+		}
+		return wpm;
+
+	}
+	
 	float ProfileScreen::avg_wpm() {
 		float wpm = 0;	
 		if (context_.tests.size() == 0) return wpm;
@@ -85,7 +108,18 @@ namespace kbchad {
 		}
 		return wpm/i;
 	}
+		
+	float ProfileScreen::avg_acc() {
+		float acc = 0.0;	
+		if (context_.tests.size() == 0) return acc;
 	
+		size_t i = 0;
+		for (; i < context_.tests.size(); ++i) {
+			acc+=context_.tests[i].acc;
+		}
+		return acc/i;
+	}
+
 	int ProfileScreen::test_completed() {
 		return context_.tests.size();
 	}
@@ -105,11 +139,17 @@ namespace kbchad {
 	
 			text("KeyboardChad") | centerX,
 			
-			text("[" + std::format("{:.1f}", avg_wpm()) + "] AVG_WPM " +	
-			    "[" + std::to_string(test_completed()) + "] TESTS " +	
+			text("[" + std::format("{:.1f}", avg_wpm()) + " avg wpm] " +	
+			    "[" + std::to_string(test_completed()) + " test completed] " +	
 				"[" + std::to_string(typing_time().first.count()) + "h " +
-				std::to_string(typing_time().second.count()) + " m" + 
-			"] OF TYPE") | centerABS,	
+				std::to_string(typing_time().second.count()) + "m" + 
+			" of typing]") | centerABS,	
+
+						
+			text("[" + std::format("{:.1f}", max_wpm()) + " highest wpm] " +	
+			    "[" + std::format("{:.1f}", avg_acc()) + "\% avg acc] " +	
+				"[" + std::to_string(words_typed()) +" words typed]") | centerABS,	
+	
 			
 			text("[ecs] exit [entr] restart [tab] profile") | buttom | centerX 
 		});

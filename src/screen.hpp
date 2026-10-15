@@ -58,6 +58,9 @@ namespace kbchad {
 		explicit ProfileScreen(User_Context context);
 		
 		float avg_wpm();	
+		float avg_acc();	
+		float max_wpm();	
+		int words_typed();	
 		int test_completed();
 		std::pair<std::chrono::hours, std::chrono::minutes> typing_time();
 

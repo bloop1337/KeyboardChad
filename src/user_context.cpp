@@ -4,7 +4,7 @@ namespace kbchad {
 
 	Wpm_Test TSC_to_Wpm_Test(Typing_Session_Context ctx) {
 		const float acc = ctx.errors > 0 ? 100.0 - (100.0 * ctx.errors / ctx.text_size) : 100;
-		const float wpm = (ctx.words_count * 60000.0 / (ctx.end_time - ctx.start_time)) - ctx.errors;
+		const float wpm = (ctx.words_count * 60000.0 / (ctx.end_time - ctx.start_time));
 
 		return (Wpm_Test){
 			.wpm = wpm,

@@ -129,7 +129,7 @@ namespace kbchad {
 		for (Wpm_Test test: context_.tests) typing_time += test.typing_time;
 
 		auto h = duration_cast<hours>(milliseconds(typing_time));
-		auto m = duration_cast<hours>(h - milliseconds(typing_time));
+		auto m = duration_cast<minutes>(milliseconds(typing_time) - h);
 
 		return {h, m};	
 	}

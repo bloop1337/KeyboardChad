@@ -23,7 +23,7 @@
 #include "user_storage.hpp"
 #include "screen.hpp"
 
-void on_ctrlc(int a) {
+void on_ctrlc(int code) {
 	tui::end_render();
 	exit(0);
 }
@@ -39,8 +39,8 @@ int main() {
 	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
 
 	tui::begin_render();
-	tui::set_ctrlc_handler(&on_ctrlc);
 	tui::hideCursor();
+	tui::set_ctrlc_handler(&on_ctrlc);
 
 	bool running = true;
 	while (running) {

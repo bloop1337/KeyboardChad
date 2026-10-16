@@ -20,22 +20,34 @@ namespace tui {
 		else pixel.isStrike = true;
 	}
 
-	void Input::render(Window& w, int& x, int& y) {
-		for (int i = 0; i < hint.size(); i++) {
-			if (i == cursorPosition) {
-				renderCursor(w, x, y);
-			}
-
-			w.pixelAt(x, y).pixelContent = hint[i];
-			applyStyles(i, w.pixelAt(x, y), hint, input);
-			x++;
-			if (x > w.getWidth()) {
-				x = 1;
-                y += 1;
-			}
-		}
-    }
+//	void Input::render(Window& w, int& x, int& y) {
+//		for (int i = 0; i < hint.size(); i++) {
+//			if (i == cursorPosition) {
+//				renderCursor(w, x, y);
+//			}
+//
+//			w.pixelAt(x, y).pixelContent = hint[i];
+//			applyStyles(i, w.pixelAt(x, y), hint, input);
+//			x++;
+//			if (x > w.getWidth()) {
+//				x = 1;
+//                y += 1;
+//			}
+//		}
+//    }
 	
+	void Input::render(Window& w, int& x, int& y) {
+		x = w.getWidth() / 2 - cursorPosition;
+		renderCursor(w, w.getWidth() / 2, y);
+
+		for (int i = 0; i < hint.size(); i++) {		
+			if (x > 0 && x < w.getWidth()) {
+				w.pixelAt(x, y).pixelContent = hint[i];
+				applyStyles(i, w.pixelAt(x, y), hint, input);
+			}
+			++x;
+		}
+	}
 	void Input::press(char key) {
 		if (isEnd()) return;
 		

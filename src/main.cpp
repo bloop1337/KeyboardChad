@@ -36,7 +36,7 @@ int main() {
 	tui::Window w = tui::Window{std::make_shared<tui::size::FullScreen>()};
 	std::unique_ptr<kbchad::Screen> s  = std::make_unique<kbchad::TypingScreen>();	
 	
-	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
+	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(25));
 
 	tui::begin_render();
 	tui::hideCursor();
@@ -54,7 +54,7 @@ int main() {
 			}
 			case kbchad::CurrentState::RestartTest: {
 				s = std::make_unique<kbchad::TypingScreen>();
-				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(10));
+				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(25));
 				break;
 			}
 			case kbchad::CurrentState::ShowStatistic: {	

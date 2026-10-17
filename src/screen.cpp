@@ -13,7 +13,7 @@ namespace kbchad {
 		w.setContent({
 			text("KeyboardChad") | centerX,
 			input_ | centerABS,
-			text("[ecs] exit [entr] restart [tab] profile") | buttom | centerX 
+			text("[ecs] exit [ent] restart [tab] profile") | buttom | centerX  
 		});
 
 		w.renderDiff();
@@ -58,7 +58,7 @@ namespace kbchad {
 		w.setContent({
 			text("KeyboardChad") | centerX,
 			stat_text | centerABS,
-			text("[ecs] exit [entr] restart [tab] profile") | buttom | centerX 
+			text("[ecs] exit [ent] next test [tab] profile") | buttom | centerX
 		});
 
 		w.renderDiff();
@@ -151,7 +151,7 @@ namespace kbchad {
 				"[" + std::to_string(words_typed()) +" words typed]") | centerABS,	
 	
 			
-			text("[ecs] exit [entr] restart [tab] profile") | buttom | centerX 
+			text("[ecs] exit [ent] next test") | buttom | centerX 
 		});
 
 		w.renderDiff();

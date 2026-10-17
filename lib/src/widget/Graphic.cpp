@@ -11,7 +11,7 @@ namespace tui {
             int value = std::min(params.at(row), height);
             int _y = height;
             for (int _ = 0; _ < value; _++) {
-                w.pixelAt(row, _y).isInvert = true;
+                w.pixelAt(row, _y).style.mode = Pixel_Graphic_Mode::INVERSE;
                 _y--;
             }
         }

@@ -39,15 +39,7 @@ namespace tui {
 	    return oldContent.at(loc);
 	}
 	void renderPixelWithStyle(const Pixel& pixel) {
-
-		if (pixel.isBold) std::cout << "\x1B[1m";
-		if (pixel.isInvert) std::cout << "\x1B[7m";
-		if (pixel.isUnderl) std::cout << "\x1B[4m";
-		if (pixel.isItal) std::cout << "\x1B[3m";
-		if (pixel.isStrike) std::cout << "\x1B[9m";
-
-		std::cout << pixel.pixelContent;
-		std::cout << "\x1B[0m";
+		std::cout << pixel.with_styles() << "\x1B[0m";
 	}
 
     void Window::prepareContent() {

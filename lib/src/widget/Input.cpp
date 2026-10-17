@@ -1,11 +1,12 @@
 #include "Keys.hpp"
 #include "Input.hpp"
 #include "Window.hpp"
+#include "../../../src/config.hpp"
 
 namespace tui {
 
 	void renderCursor(Window& w, int x, int y) {
-		w.pixelAt(x, y).isInvert = true; 
+		w.pixelAt(x, y).style = kbchad::config::CURSOR; 
 	}
 
 	void applyStyles(
@@ -16,8 +17,8 @@ namespace tui {
 	) 
 	{		
 		if (input.size() <= index) return;
-		if (hint[index] == input[index]) pixel.isBold = true;
-		else pixel.isStrike = true;
+		if (hint[index] == input[index]) pixel.style = kbchad::config::FINE;
+		else pixel.style = kbchad::config::ERROR;
 	}
 
 //	void Input::render(Window& w, int& x, int& y) {

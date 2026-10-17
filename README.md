@@ -1,7 +1,6 @@
 # KeyboardChad — tui typing app
 
-<img width="1920" height="1200" alt="kbchad preview gif" src="static/kbchad_preview.gif" />
-
+<img width="1920" height="1200" alt="kbchad preview gif" src="static/kbchad_preview.GIF" />
 
 ### Installation
 Linux:

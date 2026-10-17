@@ -1,5 +1,5 @@
 #include "screen.hpp"
-#include "word_counter.hpp"
+#include "wpm_test_utils.hpp"
 
 #include <chrono>
 
@@ -44,17 +44,17 @@ namespace kbchad {
 
 	Typing_Session_Context& TypingScreen::context() { return context_; }
 
-	TestStatisticScreen::TestStatisticScreen(Typing_Session_Context context): context_(context) {}
+	TestStatisticScreen::TestStatisticScreen(Typing_Session_Context context, bool writable): context_(context), writable_(writable) {}
 	
 	void TestStatisticScreen::render(Window& w) {
-		const float acc = context_.errors > 0 ? 100.0 - (100.0 * context_.errors / context_.text_size) : 100;
-		const float wpm = (context_.words_count * 60000.0 / (context_.end_time - context_.start_time));
+		std::shared_ptr<tui::TextWidget> stat_text;
+		const Wpm_Test test = TSC_to_Wpm_Test(context_);
 
-		auto stat_text = std::make_shared<tui::TextWidget>(
-			"WPM: " + std::to_string(wpm) + 
-			" ACC: " + std::to_string(acc) + "%"
-		);
-
+		if (writable_)
+			stat_text = std::make_shared<tui::TextWidget>("WPM: " + std::to_string(test.wpm) + " ACC: " + std::to_string(test.acc) + "%" );
+		else 
+			stat_text = std::make_shared<tui::TextWidget>("WPM test not saved: Invalid accuracy(" + std::to_string(test.acc) + "%)");	
+		
 		w.setContent({
 			text("KeyboardChad") | centerX,
 			stat_text | centerABS,

@@ -108,7 +108,9 @@ namespace kbchad {
 		return context;
 	}
 
-	void write_test(const Wpm_Test test) {
+	bool write_test(const Wpm_Test test) { 
+		if (!is_valid_test(test)) return false;
+
 		user_data_write(
 			std::to_string(test.wpm) + "," +
 			std::to_string(test.acc) + "," +
@@ -116,6 +118,8 @@ namespace kbchad {
 			std::to_string(test.words_count) + "," +
 			std::to_string(test.typing_time) + "\n"
 		);
+
+		return true;
 	}
 };
 

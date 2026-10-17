@@ -41,9 +41,9 @@ namespace kbchad {
 	class TestStatisticScreen: public Screen {
 	private:	
 		Typing_Session_Context context_;
-	
+		bool writable_;	
 	public:
-		explicit TestStatisticScreen(Typing_Session_Context context);
+		explicit TestStatisticScreen(Typing_Session_Context context, bool writable);
 		
 		void render(tui::Window& w) override;
 		CurrentState on_key(tui::Key key) override;

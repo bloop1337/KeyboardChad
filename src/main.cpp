@@ -21,6 +21,7 @@
 #include <Window.hpp>
 
 #include "user_storage.hpp"
+#include "config.hpp"
 #include "screen.hpp"
 
 void on_ctrlc(int code) {
@@ -36,7 +37,7 @@ int main() {
 	tui::Window w = tui::Window{std::make_shared<tui::size::FullScreen>()};
 	std::unique_ptr<kbchad::Screen> s  = std::make_unique<kbchad::TypingScreen>();	
 	
-	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(25));
+	static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(kbchad::config::WORD_COUNT));
 
 	tui::begin_render();
 	tui::hideCursor();
@@ -54,13 +55,12 @@ int main() {
 			}
 			case kbchad::CurrentState::RestartTest: {
 				s = std::make_unique<kbchad::TypingScreen>();
-				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(25));
+				static_cast<kbchad::TypingScreen*>(s.get())->reset_input(list.generateSentence(kbchad::config::WORD_COUNT));
 				break;
 			}
 			case kbchad::CurrentState::ShowStatistic: {	
-				kbchad::Typing_Session_Context ctx = static_cast<kbchad::TypingScreen*>(s.get())->context();
-				write_test(TSC_to_Wpm_Test(ctx));
-				s = std::make_unique<kbchad::TestStatisticScreen>(ctx);
+				kbchad::Typing_Session_Context ctx = static_cast<kbchad::TypingScreen*>(s.get())->context();	
+				s = std::make_unique<kbchad::TestStatisticScreen>(ctx, kbchad::write_test(TSC_to_Wpm_Test(ctx)));
 				break;
 			}
 			case kbchad::CurrentState::ShowProfile: {

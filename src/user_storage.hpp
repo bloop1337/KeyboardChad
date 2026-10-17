@@ -1,6 +1,7 @@
 #pragma once
 
 #include "user_context.hpp"
+#include "wpm_test_utils.hpp"
 #include <string>
 
 namespace kbchad {
@@ -8,6 +9,6 @@ namespace kbchad {
 	std::string get_home();
 
 	User_Context load_ud();
-	void write_test(const Wpm_Test test);	
+	bool write_test(const Wpm_Test test);	
 };
 

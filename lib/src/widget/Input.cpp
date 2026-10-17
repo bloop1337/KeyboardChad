@@ -1,11 +1,12 @@
 #include "Keys.hpp"
 #include "Input.hpp"
 #include "Window.hpp"
+#include "../../../src/config.hpp"
 
 namespace tui {
 
 	void renderCursor(Window& w, int x, int y) {
-		w.pixelAt(x, y).isInvert = true; 
+		w.pixelAt(x, y).style = kbchad::config::CURSOR; 
 	}
 
 	void applyStyles(
@@ -16,26 +17,38 @@ namespace tui {
 	) 
 	{		
 		if (input.size() <= index) return;
-		if (hint[index] == input[index]) pixel.isBold = true;
-		else pixel.isStrike = true;
+		if (hint[index] == input[index]) pixel.style = kbchad::config::FINE;
+		else pixel.style = kbchad::config::ERROR;
 	}
 
-	void Input::render(Window& w, int& x, int& y) {
-		for (int i = 0; i < hint.size(); i++) {
-			if (i == cursorPosition) {
-				renderCursor(w, x, y);
-			}
-
-			w.pixelAt(x, y).pixelContent = hint[i];
-			applyStyles(i, w.pixelAt(x, y), hint, input);
-			x++;
-			if (x > w.getWidth()) {
-				x = 1;
-                y += 1;
-			}
-		}
-    }
+//	void Input::render(Window& w, int& x, int& y) {
+//		for (int i = 0; i < hint.size(); i++) {
+//			if (i == cursorPosition) {
+//				renderCursor(w, x, y);
+//			}
+//
+//			w.pixelAt(x, y).pixelContent = hint[i];
+//			applyStyles(i, w.pixelAt(x, y), hint, input);
+//			x++;
+//			if (x > w.getWidth()) {
+//				x = 1;
+//                y += 1;
+//			}
+//		}
+//    }
 	
+	void Input::render(Window& w, int& x, int& y) {
+		x = w.getWidth() / 2 - cursorPosition;
+		renderCursor(w, w.getWidth() / 2, y);
+
+		for (int i = 0; i < hint.size(); i++) {		
+			if (x > 0 && x < w.getWidth()) {
+				w.pixelAt(x, y).pixelContent = hint[i];
+				applyStyles(i, w.pixelAt(x, y), hint, input);
+			}
+			++x;
+		}
+	}
 	void Input::press(char key) {
 		if (isEnd()) return;
 		

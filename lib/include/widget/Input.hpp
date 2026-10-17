@@ -4,7 +4,7 @@
 namespace tui {
 
 class Input: public Widget {
-private:
+protected:
 	std::string hint; 
 
 	int cursorPosition = 0;
@@ -17,7 +17,7 @@ public:
 
 	void render(Window& w, int& x, int& y) override;
 	void press(char key);	
-	bool isEnd();
+	virtual bool isEnd();
 
 	int getWidth() override;
 	int getHeight() override;

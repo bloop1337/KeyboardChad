@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <Pixel.hpp>
 
 namespace kbchad::config {
@@ -23,5 +25,6 @@ namespace kbchad::config {
 		.fg   = tui::Pixel_Fg_Color::DEFAULT,
 		.bg   = tui::Pixel_Bg_Color::DEFAULT,
 	};
-
+	
+	constexpr std::string VERSION = "1.2.0";
 };

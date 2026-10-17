@@ -19,4 +19,4 @@ build/kbchad # dict will be created automatically
 ```
 
 > [!Tip]
-> WordLists directory: $HOME/.local/share/kbchad/wordlists/
+> WordLists directory: $HOME/.local/share/kbchad/

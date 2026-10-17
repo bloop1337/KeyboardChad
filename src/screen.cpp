@@ -1,4 +1,5 @@
 #include "screen.hpp"
+#include "config.hpp"
 #include "wpm_test_utils.hpp"
 
 #include <chrono>
@@ -11,7 +12,7 @@ namespace kbchad {
 
 	void TypingScreen::render(Window& w) {
 		w.setContent({
-			text("KeyboardChad") | centerX,
+			text("KeyboardChad " + kbchad::config::VERSION) | centerX,
 			input_ | centerABS,
 			text("[ecs] exit [ent] restart [tab] profile") | buttom | centerX  
 		});
@@ -56,7 +57,7 @@ namespace kbchad {
 			stat_text = std::make_shared<tui::TextWidget>("WPM test not saved: Invalid accuracy(" + std::to_string(test.acc) + "%)");	
 		
 		w.setContent({
-			text("KeyboardChad") | centerX,
+			text("KeyboardChad " + kbchad::config::VERSION) | centerX,
 			stat_text | centerABS,
 			text("[ecs] exit [ent] next test [tab] profile") | buttom | centerX
 		});
@@ -137,7 +138,7 @@ namespace kbchad {
 	void ProfileScreen::render(Window& w) {
 		w.setContent({
 	
-			text("KeyboardChad") | centerX,
+			text("KeyboardChad " + kbchad::config::VERSION) | centerX,
 			
 			text("[" + std::format("{:.1f}", avg_wpm()) + " avg wpm] " +	
 			    "[" + std::to_string(test_completed()) + " test completed] " +	

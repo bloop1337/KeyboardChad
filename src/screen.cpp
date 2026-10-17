@@ -51,7 +51,7 @@ namespace kbchad {
 		const Wpm_Test test = TSC_to_Wpm_Test(context_);
 
 		if (writable_)
-			stat_text = std::make_shared<tui::TextWidget>("WPM: " + std::to_string(test.wpm) + " ACC: " + std::to_string(test.acc) + "%" );
+			stat_text = std::make_shared<tui::TextWidget>("WPM: " + std::format("{:.1f}", test.wpm) + " ACC: " + std::format("{:.1f}", test.acc) + "%" );
 		else 
 			stat_text = std::make_shared<tui::TextWidget>("WPM test not saved: Invalid accuracy(" + std::to_string(test.acc) + "%)");	
 		

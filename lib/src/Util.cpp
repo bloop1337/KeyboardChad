@@ -49,7 +49,7 @@ namespace tui {
 		std::cout << "\x1B[?25l";
 	}
 	void showCursor() {
-		std::cout << "\x1B[?24h";
+		std::cout << "\x1B[?25h";
 	}
     
     void moveCursor(int x, int y) {

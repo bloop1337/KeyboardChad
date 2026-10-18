@@ -31,11 +31,22 @@ namespace tui {
 
 	Pixel& Window::pixelAt(int x, int y) {
 		int loc = (sz->get_width() * y) + x;
+
+		// when font size super small
+		if (loc >= sz->get_width() * sz->get_height())
+			return content[0];
+
 		return content.at(loc);
 	}
 	
 	Pixel& Window::oldPixelAt(int x, int y) {	
 	    int loc = (sz->get_width() * y) + x;
+
+		// when font size super small
+		if (loc >= sz->get_width() * sz->get_height())
+			return oldContent[0];
+
+
 	    return oldContent.at(loc);
 	}
 	void renderPixelWithStyle(const Pixel& pixel) {
@@ -54,7 +65,7 @@ namespace tui {
 
 		for (int i = 0; i < elements.size(); i++) {
 			elements[i]->render(*this, x, y);
-			if (y <= getHeight()) y += 1;
+			if (y < getHeight()) y += 1;
 			x = 0;
 		}
     }
@@ -96,6 +107,8 @@ namespace tui {
         if (content.size() == oldContent.size() && !needUpdate()) {
             for (int x = 0; x < sz->get_width(); x++) {
                 for (int y = 0; y < sz->get_height(); y++) {
+					if ((y * sz->get_width() + x) >= content.size())
+						continue;
                     if (pixelAt(x, y) == oldPixelAt(x, y))
                         continue;
                     
